@@ -17,12 +17,18 @@ function RootLayoutNav() {
 
     const inAuthGroup = segments[0] === '(auth)';
     const inTabsGroup = segments[0] === '(tabs)';
+    const onIndexPage = segments.length === 0;
+    const onLoginPage = segments[0] === 'login';
+    const onProfileSetupPage = segments[0] === 'profile-setup';
 
-    if (!isAuthenticated && !inAuthGroup) {
-      // Redirect to login if not authenticated
+    // Allow index page to handle its own routing logic
+    if (onIndexPage) return;
+
+    if (!isAuthenticated && !inAuthGroup && !onLoginPage && !onProfileSetupPage) {
+      // Redirect to login if not authenticated and not on login/profile-setup pages
       router.replace('/login');
-    } else if (isAuthenticated && inAuthGroup) {
-      // Redirect to dashboard if authenticated and in auth group
+    } else if (isAuthenticated && (inAuthGroup || onLoginPage)) {
+      // Redirect to dashboard if authenticated and on auth pages
       router.replace('/(tabs)/dashboard');
     } else if (isAuthenticated && !isSubscriptionActive() && inTabsGroup) {
       // Check subscription status for protected routes
@@ -33,7 +39,7 @@ function RootLayoutNav() {
         router.replace('/subscription');
       }
     }
-  }, [isAuthenticated, isLoading, segments, subscription]);
+  }, [isAuthenticated, isLoading, segments, subscription, router]);
 
   return (
     <>

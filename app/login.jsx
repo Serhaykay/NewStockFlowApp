@@ -35,6 +35,7 @@ export default function LoginScreen() {
   };
 
   const handleSetupProfile = () => {
+    console.log('Navigating to profile setup...');
     router.push('/profile-setup');
   };
 
