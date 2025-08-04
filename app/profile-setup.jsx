@@ -19,6 +19,9 @@ export default function ProfileSetupScreen() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
+  // Debug log to confirm the component is rendering
+  console.log('ProfileSetupScreen rendered');
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -34,7 +37,7 @@ export default function ProfileSetupScreen() {
       const success = await createProfile(formData);
       if (success) {
         Alert.alert('Success', 'Profile created successfully!', [
-          { text: 'OK', onPress: () => router.replace('/login') }
+          { text: 'OK', onPress: () => router.replace('/(tabs)/dashboard') }
         ]);
       } else {
         Alert.alert('Error', 'Failed to create profile');
