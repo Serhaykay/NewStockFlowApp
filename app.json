@@ -1,6 +1,6 @@
 {
   "expo": {
-    "scheme": "StockFlowApp",
+    "scheme": "stockflowapp",
     "name": "StockFlowApp",
     "slug": "StockFlowApp",
     "version": "1.0.0",
