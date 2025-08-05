@@ -6,6 +6,7 @@ import { ProductProvider } from '../context/ProductContext';
 import { OrderProvider } from '../context/OrderContext';
 import { AIProvider } from '../context/AIContext';
 import { StatusBar } from 'expo-status-bar';
+import { navigateToDashboard, navigateToLogin } from '../utils/navigation';
 
 function RootLayoutNav() {
   const { isAuthenticated, isLoading, subscription, isSubscriptionActive } = useAuth();
@@ -26,11 +27,11 @@ function RootLayoutNav() {
 
     if (!isAuthenticated && !inAuthGroup && !onLoginPage && !onProfileSetupPage) {
       // Redirect to login if not authenticated and not on login/profile-setup pages
-      router.replace('/login');
+      navigateToLogin(router);
     } else if (isAuthenticated && (inAuthGroup || onLoginPage)) {
       // Redirect to dashboard if authenticated and on auth pages
       console.log('User authenticated, redirecting to dashboard from layout guard');
-      router.replace('/(tabs)/dashboard');
+      navigateToDashboard(router);
     } else if (isAuthenticated && !isSubscriptionActive() && inTabsGroup) {
       // Check subscription status for protected routes
       const protectedRoutes = ['ai-assistant', 'analytics', 'generate-receipt'];

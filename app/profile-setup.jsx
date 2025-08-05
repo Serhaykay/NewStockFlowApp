@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { navigateToDashboard } from '../utils/navigation';
 
 export default function ProfileSetupScreen() {
   const { createProfile } = useAuth();
@@ -37,7 +38,7 @@ export default function ProfileSetupScreen() {
       const success = await createProfile(formData);
       if (success) {
         Alert.alert('Success', 'Profile created successfully!', [
-          { text: 'OK', onPress: () => router.replace('/(tabs)/dashboard') }
+          { text: 'OK', onPress: () => navigateToDashboard(router) }
         ]);
       } else {
         Alert.alert('Error', 'Failed to create profile');

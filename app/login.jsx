@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link } from 'expo-router';
+import { navigateToDashboard, navigateToProfileSetup } from '../utils/navigation';
+import { debugAuth, debugBiometric } from '../utils/debug';
 
 
 export default function LoginScreen() {
@@ -13,8 +15,10 @@ export default function LoginScreen() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
-    // Optional: Prevent auto-redirect; allows users to choose to set up profile
-  }, []);
+    // Debug current auth state
+    debugAuth('LoginScreen mount', user, !!user, isLoading);
+    debugBiometric(biometricSupported, null, null);
+  }, [user, isLoading, biometricSupported]);
 
   const handleBiometricLogin = async () => {
     if (isAuthenticating) return;
@@ -22,21 +26,26 @@ export default function LoginScreen() {
     setIsAuthenticating(true);
     try {
       console.log('Starting biometric authentication...');
+      debugBiometric(biometricSupported, null, null);
+      
       const success = await login();
       console.log('Authentication result:', success);
+      debugBiometric(biometricSupported, success, null);
       
       if (success) {
         console.log('Authentication successful, navigating to dashboard...');
         // Use a small delay to ensure state updates are processed
         setTimeout(() => {
-          router.replace('/(tabs)/dashboard');
+          navigateToDashboard(router);
         }, 100);
       } else {
         console.log('Authentication failed');
+        debugBiometric(biometricSupported, false, new Error('Authentication failed'));
         Alert.alert('Authentication Failed', 'Please try again or contact support.');
       }
     } catch (error) {
       console.error('Authentication error:', error);
+      debugBiometric(biometricSupported, false, error);
       Alert.alert('Error', 'Authentication failed. Please try again.');
     } finally {
       setIsAuthenticating(false);
@@ -45,12 +54,7 @@ export default function LoginScreen() {
 
   const handleSetupProfile = () => {
     console.log('Navigating to profile setup...');
-    try {
-      router.push('/profile-setup');
-    } catch (error) {
-      console.error('Navigation error:', error);
-      Alert.alert('Error', 'Failed to navigate to profile setup. Please try again.');
-    }
+    navigateToProfileSetup(router);
   };
 
   if (isLoading) {
@@ -94,7 +98,12 @@ export default function LoginScreen() {
               onPress={handleBiometricLogin}
               disabled={isAuthenticating}
             >
-              <Ionicons name="finger-print" size={24} color="#fff" style={styles.authIcon} />
+              <Ionicons 
+                name={isAuthenticating ? "hourglass" : "finger-print"} 
+                size={24} 
+                color="#fff" 
+                style={styles.authIcon} 
+              />
               <Text style={styles.authButtonText}>
                 {isAuthenticating ? 'Authenticating...' : 'Unlock with Biometrics'}
               </Text>
@@ -112,9 +121,29 @@ export default function LoginScreen() {
             <TouchableOpacity
               style={[styles.authButton, { backgroundColor: '#25D366' }]}
               onPress={handleSetupProfile}
+              disabled={isAuthenticating}
             >
               <Ionicons name="person-add" size={24} color="#fff" style={styles.authIcon} />
               <Text style={styles.authButtonText}>Set Up Profile</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Manual login option for devices without biometrics */}
+          {!biometricSupported && user && (
+            <TouchableOpacity
+              style={[styles.authButton, { backgroundColor: '#FF6B35' }, isAuthenticating && styles.authButtonDisabled]}
+              onPress={handleBiometricLogin}
+              disabled={isAuthenticating}
+            >
+              <Ionicons 
+                name={isAuthenticating ? "hourglass" : "log-in"} 
+                size={24} 
+                color="#fff" 
+                style={styles.authIcon} 
+              />
+              <Text style={styles.authButtonText}>
+                {isAuthenticating ? 'Signing In...' : 'Sign In'}
+              </Text>
             </TouchableOpacity>
           )}
         </View>

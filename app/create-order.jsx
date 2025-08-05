@@ -42,7 +42,7 @@ export default function CreateOrderScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F9F9FF' }}>
       <ScrollView contentContainerStyle={styles.container}>
-        <TouchableOpacity onPress={() => router.replace('/dashboard')} style={styles.backBtn}>
+        <TouchableOpacity onPress={() => router.replace('/(tabs)/dashboard')} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color="#5B3CC4" />
           <Text style={styles.backText}>Back to Dashboard</Text>
         </TouchableOpacity>

@@ -26,25 +26,35 @@ export const AuthProvider = ({ children }) => {
   };
 
   const checkAuthState = async () => {
-  try {
-    const userToken = await SecureStore.getItemAsync('userToken');
-    const userData = await AsyncStorage.getItem('userData');
-    
-    if (userToken && userData) {
-      setUser(JSON.parse(userData));
-      setIsAuthenticated(true);
-    } else {
-      setUser(null);
+    try {
+      const userToken = await SecureStore.getItemAsync('userToken');
+      const userData = await AsyncStorage.getItem('userData');
+      
+      if (userToken && userData) {
+        try {
+          const parsedUserData = JSON.parse(userData);
+          setUser(parsedUserData);
+          setIsAuthenticated(true);
+        } catch (parseError) {
+          console.error('Error parsing user data:', parseError);
+          // Clear corrupted data
+          await SecureStore.deleteItemAsync('userToken');
+          await AsyncStorage.removeItem('userData');
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error('Error checking auth state:', error);
       setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error('Error checking auth state:', error);
-    setIsAuthenticated(false);
-    setUser(null);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
 
   const checkSubscriptionStatus = async () => {
@@ -129,8 +139,12 @@ export const AuthProvider = ({ children }) => {
           return true;
         }
       } else {
+        // Fallback for devices without biometric support
         const userToken = await SecureStore.getItemAsync('userToken');
-        if (userToken) {
+        const userData = await AsyncStorage.getItem('userData');
+        
+        if (userToken && userData) {
+          setUser(JSON.parse(userData));
           setIsAuthenticated(true);
           return true;
         }
