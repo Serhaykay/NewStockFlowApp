@@ -21,13 +21,22 @@ export default function LoginScreen() {
     
     setIsAuthenticating(true);
     try {
+      console.log('Starting biometric authentication...');
       const success = await login();
+      console.log('Authentication result:', success);
+      
       if (success) {
-        router.replace('/(tabs)/dashboard');
+        console.log('Authentication successful, navigating to dashboard...');
+        // Use a small delay to ensure state updates are processed
+        setTimeout(() => {
+          router.replace('/(tabs)/dashboard');
+        }, 100);
       } else {
+        console.log('Authentication failed');
         Alert.alert('Authentication Failed', 'Please try again or contact support.');
       }
     } catch (error) {
+      console.error('Authentication error:', error);
       Alert.alert('Error', 'Authentication failed. Please try again.');
     } finally {
       setIsAuthenticating(false);
@@ -36,7 +45,12 @@ export default function LoginScreen() {
 
   const handleSetupProfile = () => {
     console.log('Navigating to profile setup...');
-    router.push('/profile-setup');
+    try {
+      router.push('/profile-setup');
+    } catch (error) {
+      console.error('Navigation error:', error);
+      Alert.alert('Error', 'Failed to navigate to profile setup. Please try again.');
+    }
   };
 
   if (isLoading) {

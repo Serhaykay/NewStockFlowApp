@@ -29,6 +29,7 @@ function RootLayoutNav() {
       router.replace('/login');
     } else if (isAuthenticated && (inAuthGroup || onLoginPage)) {
       // Redirect to dashboard if authenticated and on auth pages
+      console.log('User authenticated, redirecting to dashboard from layout guard');
       router.replace('/(tabs)/dashboard');
     } else if (isAuthenticated && !isSubscriptionActive() && inTabsGroup) {
       // Check subscription status for protected routes

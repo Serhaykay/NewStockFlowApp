@@ -57,7 +57,7 @@ export default function ViewReceipts() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F9F9FF' }}>
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push('/dashboard')}>
+        <TouchableOpacity onPress={() => router.push('/(tabs)/dashboard')}>
           <Ionicons name="arrow-back" size={28} color="#5B3CC4" />
         </TouchableOpacity>
         <Text style={styles.title}>View Receipts</Text>
